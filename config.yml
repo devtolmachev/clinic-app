@@ -1,2 +1,9 @@
 telegram_bot:
   token: $TELEGRAM_BOT_TOKEN
+
+database:
+  csv:
+    columns: 
+      - phone
+      - tg_user_id
+      - tg_username

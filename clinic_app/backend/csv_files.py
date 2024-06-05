@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 import pandas as pd
 from clinic_app.shared import CSVS
+from clinic_app.shared.config import get_config
 
 
 class CSVFile:
@@ -104,8 +105,9 @@ class Database(CSVFile):
         if not path:
             path = CSVS["db"]
         if not Path(path).exists():
-            with open(path, "w"):
-                pass
+            cfg = get_config()
+            df = pd.DataFrame(columns=cfg["database"]["csv"]["columns"])
+            df.to_csv(path)
 
         super().__init__(path=path)
 
