@@ -1,0 +1,13 @@
+services:
+  telegram_bot:
+    container_name: medical-telegram-bot
+    build:
+      context: .
+      dockerfile: docker/telegram_bot/Dockerfile
+    volumes:
+      - ./src_csvs:/app/src_csvs
+    environment:
+      - PYTHONUNBUFFERED=1
+    
+    restart: on-failure
+    command: sh -c 'PYTHONPATH=`pwd` poetry run python3 clinic_app/frontend/telegram_bot/main.py'

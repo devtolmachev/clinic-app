@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timedelta
+import logging
 from typing import TYPE_CHECKING
 
 from aiogram.types import ReplyKeyboardRemove
@@ -11,6 +13,7 @@ from clinic_app.frontend.telegram_bot.contants import bot
 from clinic_app.frontend.telegram_bot.keyboard.reply import yes_no
 from clinic_app.frontend.telegram_bot.states import UserStates, get_fsm
 from clinic_app.shared import CSVS
+from zoneinfo import ZoneInfo
 
 if TYPE_CHECKING:
     from pandas import Series
@@ -105,6 +108,14 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
 async def start_scheduler() -> None:
     """Start scheduler for work with csv."""
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(check_csvs, "cron", hour=8, minute=55)
-    # scheduler.start()
-    await check_csvs()
+    logging.getLogger("apscheduler").setLevel(level=logging.ERROR)
+    
+    scheduler.add_job(
+        check_csvs,
+        "cron",
+        timezone=ZoneInfo("Europe/Moscow"),
+        hour=8,
+        minute=55,
+        max_instances=1
+    )
+    scheduler.start()
