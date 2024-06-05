@@ -29,8 +29,9 @@ This is an app for interact with clients of medical clinic.
 
 1. Move the csv files according to the names in the file `clinic_app/shared/__init__.py`
 
+2. Rename .env-example to .env and fill it file
 
-2. Run this commands
+3. Run this commands
 ```bash
 poetry install --no-root
 poetry run python clinic_app/frontend/telegram_bot/main.py
