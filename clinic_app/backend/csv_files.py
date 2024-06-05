@@ -103,13 +103,17 @@ class Database(CSVFile):
     def __init__(self, path: Optional[str] = None) -> None:
         if not path:
             path = CSVS["db"]
+        if not Path(path).exists():
+            with open(path, "w"):
+                pass
+
         super().__init__(path=path)
 
     def get_value_by_kv(self, kv: tuple[str, Any], column: str) -> Any | None:
         df = self.get_df()
         filtered = df.loc[df[kv[0]] == kv[1], column]
-        
+
         if filtered.empty:
             return None
-        
+
         return filtered.iloc[0]
