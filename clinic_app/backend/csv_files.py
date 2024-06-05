@@ -107,7 +107,7 @@ class Database(CSVFile):
         if not Path(path).exists():
             cfg = get_config()
             df = pd.DataFrame(columns=cfg["database"]["csv"]["columns"])
-            df.to_csv(path)
+            df.to_csv(path, index=False)
 
         super().__init__(path=path)
 
