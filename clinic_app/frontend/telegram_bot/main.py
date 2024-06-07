@@ -7,6 +7,7 @@ from clinic_app.frontend.telegram_bot.scheduler import start_scheduler
 
 async def main() -> None:
     """Entrypoint in telegram bot."""
+    logging.basicConfig(level=logging.INFO)
     await start_scheduler()
     register_handlers()
 
