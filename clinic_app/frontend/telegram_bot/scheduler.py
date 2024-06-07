@@ -106,6 +106,7 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
 
 async def start_scheduler() -> None:
     """Start scheduler for work with csv."""
+    await check_csvs()
     scheduler = AsyncIOScheduler()
     
     scheduler.add_job(
