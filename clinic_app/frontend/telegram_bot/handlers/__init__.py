@@ -41,7 +41,7 @@ async def on_start(msg: Message, state: FSMContext) -> None:
         await msg.answer(
             "Вы уже зарегистрированы в системе. Мы вам напомним о вашей "
             "записи",
-            parse_mode=None
+            parse_mode=None,
         )
         return
 
@@ -98,7 +98,7 @@ async def notify_tommorow_dialog(msg: Message, state: FSMContext) -> None:
         df.to_csv(csv.path, index=False)
 
         await msg.answer(
-            f"Отлично! Ждем вас в <b>{info["ВремяНачала"]}</b>",
+            f"Отлично! Ждем вас в <b>{info["ДатаНачала"]}</b>",
             parse_mode="HTML",
             reply_markup=ReplyKeyboardRemove(),
         )
@@ -167,7 +167,7 @@ async def reschedule(msg: Message, state: FSMContext, bot: Bot) -> None:
             f"этой [ссылке]({url})",
             reply_markup=ReplyKeyboardRemove(),
         )
-        
+
         schedule_date = datetime.now() + timedelta(minutes=15)
         sch = AsyncIOScheduler()
         text = (
@@ -229,7 +229,8 @@ async def review(msg: Message, state: FSMContext) -> None:
     else:
         await msg.answer(
             "Ого! Мы сожалеем! Расскажите нам, что мы можем улучшить! "
-            "Мы примем меры!", parse_mode=None,
+            "Мы примем меры!",
+            parse_mode=None,
         )
         await state.update_data(review=msg.text)
         await state.set_state(UserStates.get_review)

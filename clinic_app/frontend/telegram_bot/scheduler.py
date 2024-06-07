@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 from typing import TYPE_CHECKING
 
 from aiogram.types import ReplyKeyboardRemove
@@ -57,7 +56,7 @@ async def notify_before_day(row: Series, csv: CSVFile) -> None:
     reply_markup = yes_no().as_markup(resize_keyboard=True)
     await bot.send_message(
         user_id,
-        f"Вы записались на <b>{row["ВремяНачала"]}</b>, подтверждаете запись?",
+        f"Вы записались на <b>{row["ДатаНачала"]}</b>, подтверждаете запись?",
         reply_markup=reply_markup,
         parse_mode="HTML",
     )
@@ -108,7 +107,7 @@ async def start_scheduler() -> None:
     """Start scheduler for work with csv."""
     await check_csvs()
     scheduler = AsyncIOScheduler()
-    
+
     scheduler.add_job(
         check_csvs,
         "interval",
