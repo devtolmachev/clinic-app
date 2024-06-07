@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timedelta
 import logging
 from typing import TYPE_CHECKING
 
@@ -38,10 +37,10 @@ async def check_csvs() -> None:
         tasks.append(notify_before_day(row=row, csv=tommorow))
 
     for index, row in two_hours.get_df().iterrows():
-        tasks.append(notify_before_2hours(row=row, csv=tommorow))
+        tasks.append(notify_before_2hours(row=row, csv=two_hours))
 
     for index, row in reviews.get_df().iterrows():
-        tasks.append(notify_review(row=row, csv=tommorow))
+        tasks.append(notify_review(row=row, csv=reviews))
 
     await asyncio.gather(*tasks)
 
@@ -112,10 +111,9 @@ async def start_scheduler() -> None:
     
     scheduler.add_job(
         check_csvs,
-        "cron",
+        "interval",
         timezone=ZoneInfo("Europe/Moscow"),
-        hour=8,
-        minute=55,
-        max_instances=1
+        minutes=5,
+        max_instances=1,
     )
     scheduler.start()
