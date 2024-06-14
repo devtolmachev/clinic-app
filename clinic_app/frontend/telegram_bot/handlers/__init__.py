@@ -11,7 +11,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from clinic_app.backend.csv_files import CSVFile, Database
 from clinic_app.backend.utils import format_phone
-from clinic_app.frontend.telegram_bot.contants import dp
+from clinic_app.frontend.telegram_bot.constants import dp
 from clinic_app.frontend.telegram_bot.keyboard.reply import yes_no
 from clinic_app.frontend.telegram_bot.keyboard.reply.phone import (
     get_phone_markup,

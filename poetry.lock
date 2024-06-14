@@ -1137,6 +1137,20 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "whatsapp-api-client-python"
+version = "0.0.46"
+description = "This library helps you easily create a Python application with WhatsApp API."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "whatsapp_api_client_python-0.0.46-py3-none-any.whl", hash = "sha256:158cb98da04345251193413cb9e93507f8dd4601c6e4c576490fd8301c10993b"},
+    {file = "whatsapp_api_client_python-0.0.46.tar.gz", hash = "sha256:f35880429c17503e4c4fb838b31647572291b98be8aaed3414f299c12226e975"},
+]
+
+[package.dependencies]
+requests = ">=2.31.0"
+
+[[package]]
 name = "win32-setctime"
 version = "1.1.0"
 description = "A small Python utility to set file creation time on Windows"
@@ -1256,4 +1270,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "8658f338fce3daaeab0feb0bcf8aee2f518110560662e401a2758b9cbf0df315"
+content-hash = "5d054e3069323a63b34ef4b6c754cfd990f78ff0753dab0c15436dc12b5ca850"

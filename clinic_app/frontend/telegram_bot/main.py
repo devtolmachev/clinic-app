@@ -1,6 +1,6 @@
 import logging
 
-from clinic_app.frontend.telegram_bot.contants import bot, dp
+from clinic_app.frontend.telegram_bot.constants import bot, dp
 from clinic_app.frontend.telegram_bot.handlers import register_handlers
 from clinic_app.frontend.telegram_bot.scheduler import start_scheduler
 

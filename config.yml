@@ -7,3 +7,9 @@ database:
       - phone
       - tg_user_id
       - tg_username
+      - wh_user_id
+
+
+whatsapp_bot:
+  id_instance: $WHATSAPP_BOT_ID_INSTANCE
+  token_instance: $WHATSAPP_BOT_API_TOKEN_INSTANCE
