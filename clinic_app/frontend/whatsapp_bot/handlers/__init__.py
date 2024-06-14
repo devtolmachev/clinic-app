@@ -21,8 +21,7 @@ from zoneinfo import ZoneInfo
 if TYPE_CHECKING:
     import pandas as pd
 
-# MANAGER_ID = "972549102077@c.us"
-MANAGER_ID = "79855053132@c.us"
+MANAGER_ID = "972549102077@c.us"
 
 
 def error_handler(f: FunctionType) -> Any:
