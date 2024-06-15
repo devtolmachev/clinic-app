@@ -73,7 +73,10 @@ def resolve_chat_id(body_message: dict) -> int:
 
 def resolve_text_msg(body_message: dict) -> str:
     """Get text of message from body."""
-    return body_message["messageData"]["textMessageData"]["textMessage"]
+    try:
+        return body_message["messageData"]["textMessageData"]["textMessage"]
+    except KeyError:
+        return body_message["messageData"]["extendedTextMessageData"]["text"]
 
 
 def get_phone_from_msg(body_message: dict) -> str:

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from aiogram.types import ReplyKeyboardRemove
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import numpy as np
+import pandas as pd
 from clinic_app.backend.csv_files import CSVFile, Database
 from clinic_app.backend.utils import format_phone
 from clinic_app.frontend.telegram_bot.constants import bot
@@ -51,7 +51,7 @@ async def notify_before_day(row: Series, csv: CSVFile) -> None:
     Interact with `tomorrow.csv` file
     """
     user_id = get_user_id(row=row)
-    if not user_id or np.isnan(user_id):
+    if not user_id or pd.isnull(user_id):
         return
 
     reply_markup = yes_no().as_markup(resize_keyboard=True)
@@ -73,7 +73,7 @@ async def notify_before_2hours(row: Series, csv: CSVFile) -> None:
     Interact with `2hours.csv` file
     """
     user_id = get_user_id(row=row)
-    if not user_id or np.isnan(user_id):
+    if not user_id or pd.isnull(user_id):
         return
 
     await bot.send_message(
@@ -90,7 +90,7 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
     Interact with `Reviews.csv` file
     """
     user_id = get_user_id(row=row)
-    if not user_id or np.isnan(user_id):
+    if not user_id or pd.isnull(user_id):
         return
 
     await bot.send_message(
