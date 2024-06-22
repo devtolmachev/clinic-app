@@ -54,8 +54,6 @@ def middleware(type_webhook: str, body: dict) -> None:
         if not fsm_state:
             return
 
-        if fsm_state == MainFSM.get_phone:
-            return get_phone(body, fsm_context)
         if fsm_state == MainFSM.get_review:
             return get_review(body, fsm_context)
         if fsm_state == MainFSM.notify_tommorow:
@@ -96,23 +94,8 @@ def on_start(body_msg: str) -> None:
         )
         return
 
-    name = body_msg["senderData"]["senderName"]
     chat_id = resolve_chat_id(body_msg)
-
-    get_fsm().set_state(MainFSM.get_phone, chat_id)
-    bot.sending.sendMessage(
-        chat_id, f"Приветствую {name}! Пришлите ваш номер телефона"
-    )
-
-
-def get_phone(body_msg: dict, state: WhatsappFSMContext) -> None:
-    """Get phone from user."""
-    phone = format_phone(resolve_text_msg(body_msg))
-    if not phone:
-        bot.sending.sendMessage(
-            resolve_chat_id(body_msg), "Вы не отправили свой номер телефона"
-        )
-        return
+    phone = format_phone(get_phone_from_msg(body_msg))
 
     db = Database()
 
@@ -129,7 +112,6 @@ def get_phone(body_msg: dict, state: WhatsappFSMContext) -> None:
         resolve_chat_id(body_msg),
         "Ваш номер телефона сохранен. Мы вам напомним о вашей записи",
     )
-    state.clear(resolve_chat_id(body_msg))
 
 
 def get_review(body_msg: dict, state: WhatsappFSMContext) -> None:

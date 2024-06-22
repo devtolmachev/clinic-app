@@ -105,7 +105,6 @@ class WhatsappFSMContext:
 
 
 class MainFSM(WhatsappFSMGroup):
-    get_phone = StateWhatsapp()
     notify_tommorow = StateWhatsapp()
     review = StateWhatsapp()
     rescheduling = StateWhatsapp()
