@@ -13,3 +13,4 @@ database:
 whatsapp_bot:
   id_instance: $WHATSAPP_BOT_ID_INSTANCE
   token_instance: $WHATSAPP_BOT_API_TOKEN_INSTANCE
+  webhook_url: $WHATSAPP_WEBHOOK_URL

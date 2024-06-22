@@ -1,53 +1,41 @@
 import asyncio
 
+import whatsapp_api_webhook_server_python.webhooksHandler as webhooksHandler
+
 from clinic_app.frontend.whatsapp_bot.constants import bot
-from clinic_app.frontend.whatsapp_bot.handlers import error_handler, middleware
+from clinic_app.frontend.whatsapp_bot.handlers import middleware
 from clinic_app.frontend.whatsapp_bot.scheduler import start_scheduler
-
-
-@error_handler
-async def keep_alive():
-    while True:
-        notification = await asyncio.to_thread(
-            bot.webhooks.api.receiving.receiveNotification
-        )
-        if (
-            notification.data
-            and notification.data["body"]["typeWebhook"]
-            == "incomingMessageReceived"
-        ):
-            notification_id = notification.data["receiptId"]
-            
-            type_webhook = notification.data["body"]["typeWebhook"]
-            body = notification.data["body"]
-            middleware(type_webhook, body)
-            
-            await asyncio.to_thread(
-                bot.webhooks.api.receiving.deleteNotification, notification_id
-            )
+from clinic_app.shared.config import get_config
 
 
 async def prepare_bot():
     set_settings_body = {
-        "webhookUrl": "",
+        "webhookUrl": get_config()["whatsapp_bot"]["webhook_url"],
         "outgoingWebhook": "yes",
         "stateWebhook": "yes",
         "incomingWebhook": "yes",
     }
 
-    # get_settings = bot.account.getSettings
-    # settings = await asyncio.to_thread(get_settings)
-    # if settings != set_settings_body:
-    await asyncio.to_thread(bot.account.setSettings, set_settings_body)
+    get_settings = bot.account.getSettings
+    settings = await asyncio.to_thread(get_settings)
+    for k, v in settings.data.items():
+        if k in set_settings_body and v != set_settings_body[k]:
+            await asyncio.to_thread(bot.account.setSettings, set_settings_body)
+            return
+
+
+async def keep_alive():
+    while True:
+        await asyncio.sleep(3600)
 
 
 async def main():
-    await start_scheduler()
-
     await prepare_bot()
-    await keep_alive()
 
-    # bot.webhooks.startReceivingNotifications(middleware)
+    await start_scheduler()
+    webhooksHandler.startServer("127.0.0.1", 8080, middleware, startLoop=False)
+
+    await keep_alive()
 
 
 if __name__ == "__main__":

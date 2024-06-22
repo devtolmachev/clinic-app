@@ -21,6 +21,17 @@ services:
       - ./src_csvs:/app/src_csvs
     environment:
       - PYTHONUNBUFFERED=1
+    ports:
+      - 8080:8080
     
     restart: on-failure
     command: sh -c 'PYTHONPATH=`pwd` poetry run python3 clinic_app/frontend/whatsapp_bot/main.py'
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.13
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - docker/nginx/app.conf:/etc/nginx/conf.d
