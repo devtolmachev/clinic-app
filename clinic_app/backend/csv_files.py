@@ -94,7 +94,7 @@ class CSVFile:
         df = self.get_df()
         # Get a row index
         index = df.loc[df[search_value_column_name] == search_value].index[0]
-        df.at[index, new_value_column_name] = new_value
+        df.loc[index, new_value_column_name] = new_value
         if save:
             df.to_csv(self.path, index=False)
         return df

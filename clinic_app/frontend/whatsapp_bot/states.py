@@ -2,6 +2,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Self, Tuple, Type
 
+from whatsapp_chatbot_python import BaseStates
+
 
 class StateWhatsapp:
     def __init__(self) -> None:
@@ -117,3 +119,10 @@ _state = WhatsappFSMContext()
 def get_fsm() -> WhatsappFSMContext:
     """Get whatsapp bot FSMContext."""
     return _state
+
+
+class WhStates(BaseStates):
+    notify_tommorow = "notify_tommorow"
+    review = "review"
+    rescheduling = "rescheduling"
+    get_review = "get_review"

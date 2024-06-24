@@ -2,17 +2,16 @@
 
 import time
 from datetime import datetime, timedelta
-from types import FunctionType
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from whatsapp_chatbot_python import Notification
+
 from clinic_app.backend.csv_files import CSVFile, Database
 from clinic_app.backend.utils import format_phone
 from clinic_app.frontend.whatsapp_bot.constants import bot
 from clinic_app.frontend.whatsapp_bot.states import (
-    MainFSM,
-    WhatsappFSMContext,
-    get_fsm,
+    WhStates,
 )
 from clinic_app.shared import CSVS
 from loguru import logger
@@ -24,44 +23,8 @@ if TYPE_CHECKING:
 MANAGER_ID = "972549102077@c.us"
 
 
-def error_handler(f: FunctionType) -> Any:
-    """Error handler."""
-
-    def wrapper(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            logger.exception(e)
-
-    return wrapper
-
-
-@error_handler
-def middleware(type_webhook: str, body: dict) -> None:
-    """FSM middleware."""
-    if type_webhook == "incomingMessageReceived":
-        msg = body.get("messageData")
-        sender = body.get("senderData")
-        if not msg or not sender:
-            return
-
-        if msg["textMessageData"]["textMessage"] == "/start":
-            return on_start(body)
-        
-        fsm_context = get_fsm()
-        fsm_state = fsm_context.get_state(sender["chatId"])
-
-        if not fsm_state:
-            return
-
-        if fsm_state == MainFSM.get_review:
-            return get_review(body, fsm_context)
-        if fsm_state == MainFSM.notify_tommorow:
-            return notify_tomorrow(body, fsm_context)
-        if fsm_state == MainFSM.rescheduling:
-            return rescheduling(body, fsm_context)
-        if fsm_state == MainFSM.review:
-            return on_review(body, fsm_context)
+def run_work():
+    logger.info("Register whatsapp handlers was successfully!")
 
 
 def resolve_chat_id(body_message: dict) -> int:
@@ -82,44 +45,43 @@ def get_phone_from_msg(body_message: dict) -> str:
     return body_message["senderData"]["sender"].split("@")[0]
 
 
-def on_start(body_msg: str) -> None:
+@bot.router.message(text_message="/start")
+def on_start(notification: Notification) -> None:
     """Entrypoint of the bot."""
     db = Database()
-    chat_id = resolve_chat_id(body_msg)
+    chat_id = notification.chat
+
     if db.value_exists(chat_id, "wh_user_id"):
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             "Вы уже зарегистрированы в системе. Мы вам напомним о вашей "
             "записи",
         )
         return
 
-    chat_id = resolve_chat_id(body_msg)
-    phone = format_phone(get_phone_from_msg(body_msg))
-
+    phone = format_phone(get_phone_from_msg(notification.event))
     db = Database()
 
     if not db.value_exists(phone, "phone"):
         df = db.get_df()
         row = {
-            "phone": format_phone(phone),
-            "wh_user_id": resolve_chat_id(body_msg),
+            "phone": phone,
+            "wh_user_id": chat_id,
         }
         df.loc[len(df)] = row
         df.to_csv(db.path, index=False)
 
-    bot.sending.sendMessage(
-        resolve_chat_id(body_msg),
+    notification.answer(
         "Ваш номер телефона сохранен. Мы вам напомним о вашей записи",
     )
 
 
-def get_review(body_msg: dict, state: WhatsappFSMContext) -> None:
+@bot.router.message(state=WhStates.get_review)
+def get_review(notification: Notification) -> None:
     """Get full negative review from user and write it to csv file."""
-    msg_text = resolve_text_msg(body_msg)
-    chat_id = resolve_chat_id(body_msg)
+    msg_text = notification.message_text
+    chat_id = notification.chat
 
-    data = state.get_data(chat_id)
+    data = notification.state_manager.get_state_data(notification.sender)
     db = Database()
     reviews = CSVFile(CSVS["reviews"])
 
@@ -133,9 +95,9 @@ def get_review(body_msg: dict, state: WhatsappFSMContext) -> None:
         "КЛИЕНТ ОСТАВИЛ ОТЗЫВ 🔴🔴🔴:\n"
         f"Клиент: {phone}\n"
         f"Время по МСК: {dt}\n"
-        f"Сообщение:\n{resolve_text_msg(body_msg)}"
+        f"Сообщение:\n{msg_text}"
     )
-    bot.sending.sendMessage(MANAGER_ID, text)
+    bot.api.sending.sendMessage(MANAGER_ID, text)
 
     row: pd.Series = data["row"]
     reviews.find_and_replace(
@@ -147,22 +109,21 @@ def get_review(body_msg: dict, state: WhatsappFSMContext) -> None:
     )
 
     time.sleep(1.5)
-    bot.sending.sendMessage(chat_id, "Спасибо вам большое за отзыв!")
-    state.clear(chat_id)
+    notification.answer("Спасибо вам большое за отзыв!")
+    notification.state_manager.delete_state(notification.sender)
 
 
-def notify_tomorrow(body_msg: dict, state: WhatsappFSMContext) -> None:
+@bot.router.message(state=WhStates.notify_tommorow)
+def notify_tomorrow(notification: Notification) -> None:
     """Remind me the day before your appointment."""
-    chat_id = resolve_chat_id(body_msg)
-    msg_text = resolve_text_msg(body_msg)
+    msg_text = notification.message_text
     if msg_text.lower() not in ["да", "нет"]:
-        bot.sending.sendMessage(
-            chat_id,
-            "Нет такого варианта ответа, напишите пожалуйста `да` или `нет`"
+        notification.answer(
+            "Нет такого варианта ответа, напишите пожалуйста `да` или `нет`",
         )
         return
 
-    data = state.get_data(chat_id)
+    data = notification.state_manager.get_state_data(notification.sender)
     info: pd.Series = data["info_data"]
     csv: CSVFile = data["csv"]
 
@@ -171,36 +132,40 @@ def notify_tomorrow(body_msg: dict, state: WhatsappFSMContext) -> None:
         df.loc[info.name, "Подтверждение"] = 1
         df.to_csv(csv.path, index=False)
 
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             f"Отлично! Ждем вас в {info["ДатаНачала"]}",
         )
-        state.clear(chat_id)
+        notification.state_manager.delete_state(notification.sender)
 
     elif msg_text.lower() == "нет":
         df = csv.get_df()
         df.loc[info.name, "Подтверждение"] = -1
         df.to_csv(csv.path, index=False)
 
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             "Перезаписать вас на другое время? Отвечайте `да` или `нет`",
         )
-        state.set_state(MainFSM.rescheduling, chat_id)
+        notification.state_manager.set_state(
+            notification.sender, WhStates.rescheduling
+        )
+        notification.state_manager.set_state_data(
+            notification.sender, data
+        )
 
 
-def rescheduling(body_msg: dict, state: WhatsappFSMContext) -> None:
+@bot.router.message(state=WhStates.rescheduling)
+def rescheduling(notification: Notification) -> None:
     """
     Conversation with the user about rescheduling an appointment with
     a doctor.
     """
-    msg_text = resolve_text_msg(body_msg)
-    chat_id = resolve_chat_id(body_msg)
+    chat_id = notification.chat
+    msg_text = notification.message_text
     if msg_text.lower() not in ["да", "нет"]:
-        bot.sending.sendMessage(chat_id, "Нет такого варианта ответа")
+        notification.answer("Нет такого варианта ответа")
         return
 
-    data = state.get_data(chat_id)
+    data = notification.state_manager.get_state_data(notification.sender)
     info: pd.Series = data["info_data"]
     csv: CSVFile = data["csv"]
 
@@ -210,19 +175,17 @@ def rescheduling(body_msg: dict, state: WhatsappFSMContext) -> None:
         df.loc[info.name, "Подтверждение"] = -1
         df.to_csv(csv.path, index=False)
 
-        bot.sending.sendMessage(
-            chat_id, "Скоро вам позвонит менеджер для перезаписи"
-        )
+        notification.answer("Скоро вам позвонит менеджер для перезаписи")
 
         time = datetime.now().astimezone(ZoneInfo("Europe/Moscow"))
-        phone = get_phone_from_msg(body_msg)
+        phone = get_phone_from_msg(notification.event)
         text = (
             "НУЖНО ПЕРЕНАЗНАЧИТЬ ОЧЕРЕДЬ КЛИЕНТУ 🔴🔴🔴:\n"
             f"Клиент: {phone}\n"
             f"Время по МСК: {time}\n"
-            f"Сообщение:\n{resolve_text_msg(body_msg)}"
+            f"Сообщение:\n{notification.message_text}"
         )
-        bot.sending.sendMessage(MANAGER_ID, text)
+        bot.api.sending.sendMessage(MANAGER_ID, text)
 
         client_id = "1377cb96-cf0b-4599-a213-67315c8c1966"
         doctor_id = info["ИДВрач"]
@@ -231,8 +194,7 @@ def rescheduling(body_msg: dict, state: WhatsappFSMContext) -> None:
             "https://medapi.1cbit.ru/online_record"
             f"/client/{client_id}/doctor/{doctor_id}?clinic={clinic_id}"
         )
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             "Спасибо, что предупредили! Пожалуйста, перезапишитесь по "
             f"этой ссылке: {url}",
         )
@@ -256,30 +218,28 @@ def rescheduling(body_msg: dict, state: WhatsappFSMContext) -> None:
         df.loc[info.name, "Перезапись"] = -1
         df.to_csv(csv.path, index=False)
 
-        bot.sending.sendMessage(
-            chat_id, "Спасибо, что предупредили, будем вас ждать!"
-        )
+        notification.answer("Спасибо, что предупредили, будем вас ждать!")
 
-    state.clear(chat_id)
+    notification.state_manager.delete_state(notification.sender)
 
 
-def on_review(body_msg: dict, state: WhatsappFSMContext) -> None:
+@bot.router.message(state=WhStates.review)
+def on_review(notification: Notification) -> None:
     """Converstation with user about his feedback and review."""
-    chat_id = resolve_chat_id(body_msg)
-    msg_text = resolve_text_msg(body_msg)
+    msg_text = notification.message_text
     if msg_text not in list(map(str, range(1, 5 + 1))):
-        bot.sending.sendMessage(chat_id, "Оцените нас пожалуйста от 1 до 5!")
+        notification.answer("Оцените нас пожалуйста от 1 до 5!")
         return
+
+    data = notification.state_manager.get_state_data(notification.sender)
 
     if msg_text == "5":
         url = "https://yandex.ru"
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             f"Отлично, оцените нас на Яндекс.Картах {url} на карточку "
             "компании",
         )
 
-        data = state.get_data(chat_id)
         reviews = CSVFile(CSVS["reviews"])
 
         row: pd.Series = data["row"]
@@ -292,19 +252,23 @@ def on_review(body_msg: dict, state: WhatsappFSMContext) -> None:
         )
 
         time.sleep(2)
-        bot.sending.sendMessage(chat_id, "Спасибо вам большое за отзыв!")
-        state.clear(chat_id)
+        notification.answer("Спасибо вам большое за отзыв!")
+        notification.state_manager.delete_state(notification.sender)
 
     else:
-        bot.sending.sendMessage(
-            chat_id,
+        notification.answer(
             "Ого! Мы сожалеем! Расскажите нам, что мы можем улучшить! "
             "Мы примем меры!",
         )
-        state.update_data(chat_id, review=msg_text)
-        state.set_state(MainFSM.get_review, chat_id)
+        data["review"] = msg_text
+        notification.state_manager.set_state(
+            notification.sender, WhStates.get_review
+        )
+        notification.state_manager.set_state_data(
+            notification.sender, data
+        )
 
 
 def notify_rescheduling(text: str, chat_id: int) -> None:
     """Call this function by the scheduler."""
-    bot.sending.sendMessage(chat_id, text)
+    bot.api.sending.sendMessage(chat_id, text)

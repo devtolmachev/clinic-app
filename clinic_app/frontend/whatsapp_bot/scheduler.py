@@ -5,10 +5,13 @@ from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pandas as pd
+from whatsapp_chatbot_python import Notification
+from whatsapp_chatbot_python.manager.state import StateManager
+
 from clinic_app.backend.csv_files import CSVFile, Database
 from clinic_app.backend.utils import format_phone
 from clinic_app.frontend.whatsapp_bot.constants import bot
-from clinic_app.frontend.whatsapp_bot.states import get_fsm, MainFSM
+from clinic_app.frontend.whatsapp_bot.states import get_fsm, MainFSM, WhStates
 from clinic_app.shared import CSVS
 from zoneinfo import ZoneInfo
 
@@ -31,11 +34,11 @@ async def check_csvs() -> None:
     two_hours = CSVFile(CSVS["2hours"])
     reviews = CSVFile(CSVS["reviews"])
 
-    for index, row in tommorow.get_df().iterrows():
-        tasks.append(notify_before_day(row=row, csv=tommorow))
+    # for index, row in tommorow.get_df().iterrows():
+    #     tasks.append(notify_before_day(row=row, csv=tommorow))
 
-    for index, row in two_hours.get_df().iterrows():
-        tasks.append(notify_before_2hours(row=row, csv=two_hours))
+    # for index, row in two_hours.get_df().iterrows():
+    #     tasks.append(notify_before_2hours(row=row, csv=two_hours))
 
     for index, row in reviews.get_df().iterrows():
         tasks.append(notify_review(row=row, csv=reviews))
@@ -52,14 +55,15 @@ async def notify_before_day(row: Series, csv: CSVFile) -> None:
     if not user_id or pd.isnull(user_id):
         return
 
-    bot.sending.sendMessage(
+    bot.api.sending.sendMessage(
         user_id,
         f"Вы записались на {row["ДатаНачала"]}, подтверждаете запись?",
     )
 
-    state = get_fsm()
-    state.set_state(MainFSM.notify_tommorow, user_id)
-    state.update_data(user_id, info_data=row, csv=csv)
+    observer = bot.router.message
+    state = observer.state_manager
+    state.set_state(user_id, WhStates.notify_tommorow)
+    state.update_state_data(user_id, {"info_data": row, "csv": csv})
 
 
 async def notify_before_2hours(row: Series, csv: CSVFile) -> None:
@@ -71,7 +75,7 @@ async def notify_before_2hours(row: Series, csv: CSVFile) -> None:
     if not user_id or pd.isnull(user_id):
         return
 
-    bot.sending.sendMessage(
+    bot.api.sending.sendMessage(
         user_id, "Ждем вас сегодня в время по адресу! Будем рады вас видеть"
     )
 
@@ -85,14 +89,15 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
     if not user_id or pd.isnull(user_id):
         return
 
-    bot.sending.sendMessage(
+    bot.api.sending.sendMessage(
         user_id,
         "Вчера вы были у нас, спасибо!\nОцените пожалуйста от 1-5 нас!",
     )
 
-    state = get_fsm()
-    state.set_state(MainFSM.review, user_id)
-    state.update_data(user_id, row=row)
+    observer = bot.router.message
+    state = observer.state_manager
+    state.set_state(user_id, WhStates.review)
+    state.set_state_data(user_id, {"row": row})
 
 
 async def start_scheduler() -> None:

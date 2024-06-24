@@ -1050,13 +1050,13 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.32.3"
+version = "2.31.0"
 description = "Python HTTP for Humans."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
-    {file = "requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"},
+    {file = "requests-2.31.0-py3-none-any.whl", hash = "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f"},
+    {file = "requests-2.31.0.tar.gz", hash = "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1"},
 ]
 
 [package.dependencies]
@@ -1078,26 +1078,6 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
-]
-
-[[package]]
-name = "tornado"
-version = "6.4.1"
-description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "tornado-6.4.1-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:163b0aafc8e23d8cdc3c9dfb24c5368af84a81e3364745ccb4427669bf84aec8"},
-    {file = "tornado-6.4.1-cp38-abi3-macosx_10_9_x86_64.whl", hash = "sha256:6d5ce3437e18a2b66fbadb183c1d3364fb03f2be71299e7d10dbeeb69f4b2a14"},
-    {file = "tornado-6.4.1-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e2e20b9113cd7293f164dc46fffb13535266e713cdb87bd2d15ddb336e96cfc4"},
-    {file = "tornado-6.4.1-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8ae50a504a740365267b2a8d1a90c9fbc86b780a39170feca9bcc1787ff80842"},
-    {file = "tornado-6.4.1-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:613bf4ddf5c7a95509218b149b555621497a6cc0d46ac341b30bd9ec19eac7f3"},
-    {file = "tornado-6.4.1-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:25486eb223babe3eed4b8aecbac33b37e3dd6d776bc730ca14e1bf93888b979f"},
-    {file = "tornado-6.4.1-cp38-abi3-musllinux_1_2_i686.whl", hash = "sha256:454db8a7ecfcf2ff6042dde58404164d969b6f5d58b926da15e6b23817950fc4"},
-    {file = "tornado-6.4.1-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:a02a08cc7a9314b006f653ce40483b9b3c12cda222d6a46d4ac63bb6c9057698"},
-    {file = "tornado-6.4.1-cp38-abi3-win32.whl", hash = "sha256:d9a566c40b89757c9aa8e6f032bcdb8ca8795d7c1a9762910c722b1635c9de4d"},
-    {file = "tornado-6.4.1-cp38-abi3-win_amd64.whl", hash = "sha256:b24b8982ed444378d7f21d563f4180a2de31ced9d8d84443907a0a64da2072e7"},
-    {file = "tornado-6.4.1.tar.gz", hash = "sha256:92d3ab53183d8c50f8204a51e6f91d18a15d5ef261e84d452800d4ff6fc504e9"},
 ]
 
 [[package]]
@@ -1158,31 +1138,31 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "whatsapp-api-client-python"
-version = "0.0.46"
+version = "0.0.45"
 description = "This library helps you easily create a Python application with WhatsApp API."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "whatsapp_api_client_python-0.0.46-py3-none-any.whl", hash = "sha256:158cb98da04345251193413cb9e93507f8dd4601c6e4c576490fd8301c10993b"},
-    {file = "whatsapp_api_client_python-0.0.46.tar.gz", hash = "sha256:f35880429c17503e4c4fb838b31647572291b98be8aaed3414f299c12226e975"},
+    {file = "whatsapp-api-client-python-0.0.45.tar.gz", hash = "sha256:6fab90300206326b80e0276e66f1cdcc5acf238c995a3ed1454839892ed46d06"},
+    {file = "whatsapp_api_client_python-0.0.45-py3-none-any.whl", hash = "sha256:8eacd72098a4eafaf6590ccbda0eff61b3fd3eefa80db742564259068776a920"},
 ]
 
 [package.dependencies]
-requests = ">=2.31.0"
+requests = "2.31.0"
 
 [[package]]
-name = "whatsapp-api-webhook-server-python"
-version = "0.0.8"
-description = "This library helps you easily create a Python server endpoint to receive WhatsApp message webhooks."
+name = "whatsapp-chatbot-python"
+version = "0.9.1"
+description = "This library helps you easily create a Python chatbot with WhatsApp API."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "whatsapp_api_webhook_server_python-0.0.8-py3-none-any.whl", hash = "sha256:a43406b61a72177d71641d3800957b9cf47436354fc3b0bcf61acf6aef2e76ef"},
-    {file = "whatsapp_api_webhook_server_python-0.0.8.tar.gz", hash = "sha256:b1042cc065b19dd3e88fe5338690527de60f07b68e57d3b8d017533fd130e8c2"},
+    {file = "whatsapp-chatbot-python-0.9.1.tar.gz", hash = "sha256:c8e1edae0f3474480cbb85f1dbbeaf2bf6fa35a533c78e979be108b9b58dbca9"},
+    {file = "whatsapp_chatbot_python-0.9.1-py3-none-any.whl", hash = "sha256:2e40e7276e2bfa8b71cbb81b7b2c753b0b52a9848ab81cf746d703a9d2b7b520"},
 ]
 
 [package.dependencies]
-tornado = ">=6.2"
+whatsapp-api-client-python = "0.0.45"
 
 [[package]]
 name = "win32-setctime"
@@ -1304,4 +1284,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "83b20d167760bf814319057a27285f6bdd02fd80190b5a47081705f979f081e3"
+content-hash = "000ac8de89d87a05b2b138286df061667ec62c5aace5191e1d2bfda84765da06"

@@ -14,8 +14,7 @@ envyaml = "^1.10.211231"
 aioftp = "^0.22.3"
 pandas = "^2.2.2"
 loguru = "^0.7.2"
-whatsapp-api-client-python = "^0.0.46"
-whatsapp-api-webhook-server-python = "^0.0.8"
+whatsapp-chatbot-python = "^0.9.1"
 
 
 [tool.poetry.group.test.dependencies]
