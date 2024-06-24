@@ -21,8 +21,6 @@ services:
       - ./src_csvs:/app/src_csvs
     environment:
       - PYTHONUNBUFFERED=1
-    ports:
-      - 8080:8080
     
     restart: on-failure
     command: sh -c 'PYTHONPATH=`pwd` poetry run python3 clinic_app/frontend/whatsapp_bot/main.py'

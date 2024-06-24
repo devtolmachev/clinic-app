@@ -23,17 +23,12 @@ async def prepare_bot():
             return
 
 
-async def keep_alive():
-    while True:
-        await asyncio.sleep(3600)
-
-
 async def main():
     await prepare_bot()
 
     await start_scheduler()
-    bot.run_forever()
     run_work()
+    bot.run_forever()
 
 
 if __name__ == "__main__":

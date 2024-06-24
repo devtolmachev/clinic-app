@@ -34,11 +34,11 @@ async def check_csvs() -> None:
     two_hours = CSVFile(CSVS["2hours"])
     reviews = CSVFile(CSVS["reviews"])
 
-    # for index, row in tommorow.get_df().iterrows():
-    #     tasks.append(notify_before_day(row=row, csv=tommorow))
+    for index, row in tommorow.get_df().iterrows():
+        tasks.append(notify_before_day(row=row, csv=tommorow))
 
-    # for index, row in two_hours.get_df().iterrows():
-    #     tasks.append(notify_before_2hours(row=row, csv=two_hours))
+    for index, row in two_hours.get_df().iterrows():
+        tasks.append(notify_before_2hours(row=row, csv=two_hours))
 
     for index, row in reviews.get_df().iterrows():
         tasks.append(notify_review(row=row, csv=reviews))
