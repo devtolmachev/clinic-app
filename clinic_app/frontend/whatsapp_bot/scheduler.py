@@ -5,13 +5,11 @@ from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pandas as pd
-from whatsapp_chatbot_python import Notification
-from whatsapp_chatbot_python.manager.state import StateManager
 
 from clinic_app.backend.csv_files import CSVFile, Database
 from clinic_app.backend.utils import format_phone
 from clinic_app.frontend.whatsapp_bot.constants import bot
-from clinic_app.frontend.whatsapp_bot.states import get_fsm, MainFSM, WhStates
+from clinic_app.frontend.whatsapp_bot.states import WhStates
 from clinic_app.shared import CSVS
 from zoneinfo import ZoneInfo
 
