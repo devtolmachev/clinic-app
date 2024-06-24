@@ -37,7 +37,7 @@ def error_handler(f: FunctionType) -> Any:
 
 
 @error_handler
-def middleware(wbhook_hndlr, type_webhook: str, body: dict) -> None:
+def middleware(type_webhook: str, body: dict) -> None:
     """FSM middleware."""
     if type_webhook == "incomingMessageReceived":
         msg = body.get("messageData")
