@@ -98,10 +98,13 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
     state.set_state_data(user_id, {"row": row})
 
 
+scheduler = AsyncIOScheduler()
+
+
 async def start_scheduler() -> None:
     """Start scheduler for work with csv."""
+    global scheduler
     await check_csvs()
-    scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
         check_csvs,
