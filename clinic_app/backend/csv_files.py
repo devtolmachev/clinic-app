@@ -118,4 +118,4 @@ class Database(CSVFile):
         if filtered.empty:
             return None
 
-        return filtered.iloc[0]
+        return filtered[filtered.notnull()].to_list()[0]
