@@ -1,7 +1,8 @@
 import re
+from typing import Optional
 
 
-def format_phone(phone: str) -> str:
+def format_phone(phone: str) -> Optional[str]:
     """Format phone by RE and return it.
 
     Parameters
@@ -11,7 +12,7 @@ def format_phone(phone: str) -> str:
 
     Returns
     -------
-    str
+    Optional[str]
         formatted phone.
     """
     phone = re.sub(r"[\(\)]", r"", phone)
@@ -20,5 +21,5 @@ def format_phone(phone: str) -> str:
     phone_raw = re.findall(pattern, phone)
     if not phone_raw:
         return
-    
-    return "-".join(phone_raw[0])
+
+    return re.sub(pattern, r"\1-(\2)-\3-\4-\5", phone)
