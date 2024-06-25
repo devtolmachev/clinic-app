@@ -64,7 +64,7 @@ async def get_phone(msg: Message, state: FSMContext) -> None:
     phone = msg.contact.phone_number
     db = Database()
 
-    if not db.value_exists(phone, "phone"):
+    if not db.value_exists(msg.from_user.id, "tg_user_id"):
         df = db.get_df()
         row = {
             "phone": format_phone(phone),
