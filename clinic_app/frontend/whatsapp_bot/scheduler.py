@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import pandas as pd
 
 from clinic_app.backend.csv_files import CSVFile, Database
@@ -98,7 +98,12 @@ async def notify_review(row: Series, csv: CSVFile) -> None:
     state.set_state_data(user_id, {"row": row})
 
 
-scheduler = AsyncIOScheduler()
+scheduler = BackgroundScheduler()
+
+
+def async_check_csvs():
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(check_csvs())
 
 
 async def start_scheduler() -> None:
@@ -107,7 +112,7 @@ async def start_scheduler() -> None:
     await check_csvs()
 
     scheduler.add_job(
-        check_csvs,
+        async_check_csvs,
         "interval",
         timezone=ZoneInfo("Europe/Moscow"),
         minutes=5,
