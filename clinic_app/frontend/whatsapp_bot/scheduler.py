@@ -113,4 +113,5 @@ async def start_scheduler() -> None:
         minutes=5,
         max_instances=1,
     )
-    scheduler.start()
+    if not scheduler.running:
+        scheduler.start()
