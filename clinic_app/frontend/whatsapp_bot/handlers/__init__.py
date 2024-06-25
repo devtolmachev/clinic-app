@@ -61,7 +61,7 @@ def on_start(notification: Notification) -> None:
     phone = format_phone(get_phone_from_msg(notification.event))
     db = Database()
 
-    if not db.value_exists(phone, "phone"):
+    if not db.value_exists(chat_id, "wh_user_id"):
         df = db.get_df()
         row = {
             "phone": phone,

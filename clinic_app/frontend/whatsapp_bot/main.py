@@ -26,7 +26,7 @@ async def prepare_bot():
 async def main():
     await prepare_bot()
 
-    await start_scheduler()
+    # await start_scheduler()
     run_work()
     bot.run_forever()
 
