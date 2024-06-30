@@ -113,7 +113,7 @@ async def start_scheduler() -> None:
         check_csvs,
         "interval",
         timezone=ZoneInfo("Europe/Moscow"),
-        minutes=5,
+        hours=3,
         max_instances=1,
     )
     scheduler.start()

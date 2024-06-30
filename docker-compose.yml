@@ -6,6 +6,7 @@ services:
       dockerfile: docker/telegram_bot/Dockerfile
     volumes:
       - ./src_csvs:/app/src_csvs
+      - ./clinic_app/app/clinic_app
     environment:
       - PYTHONUNBUFFERED=1
     
@@ -19,6 +20,7 @@ services:
       dockerfile: docker/whatsapp_bot/Dockerfile
     volumes:
       - ./src_csvs:/app/src_csvs
+      - ./clinic_app/app/clinic_app
     environment:
       - PYTHONUNBUFFERED=1
     
