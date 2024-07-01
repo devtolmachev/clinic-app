@@ -115,7 +115,7 @@ async def start_scheduler() -> None:
         async_check_csvs,
         "interval",
         timezone=ZoneInfo("Europe/Moscow"),
-        seconds=15,
+        hours=3,
         max_instances=1,
     )
     if not scheduler.running:
